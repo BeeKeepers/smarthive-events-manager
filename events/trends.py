@@ -5,6 +5,7 @@
 """
 import logging
 from multiprocessing import Pool
+from time import sleep
 
 LOGGER = logging.getLogger()
 
