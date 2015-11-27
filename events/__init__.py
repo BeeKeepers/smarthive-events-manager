@@ -35,9 +35,10 @@ class Dispatcher(object):
             return
 
         ## Dispatch
+        trends_manager = TrendsManager()
         try:
             if msg['event_type'] == 'event_logentry': # trends log
-                TrendsManager.manage(msg)
+                trends_manager.manage(msg)
             else:
                 LOGGER.warning('No manager for %s event type' % msg['event_type'])
         except:
