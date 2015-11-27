@@ -35,7 +35,7 @@ class Dispatcher(object):
 
         ## Dispatch
         try:
-            if msg['event_type'] == 'event_attack':
+            if msg['event_type'] == 'event_logentry':
                 AttackManager.manage(msg['event_payload'])
             else:
                 LOGGER.warning('No manager for %s event type' % msg['event_type'])

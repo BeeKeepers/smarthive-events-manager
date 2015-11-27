@@ -12,7 +12,7 @@ import logging
 SCRIPT_OPTIONS = json.loads(open('settings.json').read())
 
 # Setup logging
-LOGGER = logging.getLogger('sh-eventmanager')
+LOGGER = logging.getLogger()
 LOGGER.setLevel(int(SCRIPT_OPTIONS['loglevel']))
 HANDLER = logging.FileHandler(SCRIPT_OPTIONS['logfile'])
 HANDLER.setFormatter(logging.Formatter(SCRIPT_OPTIONS['logformat']))

@@ -8,6 +8,6 @@
     "exchange_type": "direct"
   },
   "subscriptions": [
-    "test"
+    "event-manager"
   ]
 }
