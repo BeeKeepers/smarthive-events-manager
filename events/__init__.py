@@ -30,8 +30,8 @@ class Dispatcher(object):
             LOGGER.warning('Wrong message format')
             return
 
-        if ('event_type' not in msg) or ('event_payload' not in msg):
-            LOGGER.warning('Message has not event_type or event_payload')
+        if ('event_type' not in msg):
+            LOGGER.warning('Message has not event_type')
             return
 
         ## Dispatch
