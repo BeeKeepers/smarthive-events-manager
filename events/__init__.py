@@ -17,6 +17,7 @@ class Dispatcher(object):
     """docstring for Dispatcher"""
     def __init__(self):
         super(Dispatcher, self).__init__()
+	self.trends_manager = TrendsManager()
 
     def dispatch(self, channel, method, properties, body):
         """
@@ -38,8 +39,7 @@ class Dispatcher(object):
         ## Dispatch
         try:
             if msg['event_type'] == 'event_logentry': # trends log
-                trends_manager = TrendsManager()
-                trends_manager.manage(msg)
+                self.trends_manager.manage(msg)
             elif msg['event_type'] == 'honeypot_create': # deploy honeypot
                 honeypots_manager = HoneypotManager()
                 honeypots_manager.manage(msg)
