@@ -5,8 +5,13 @@
 """
 import logging
 import digitalocean.pywrapper as dopy
+import pika
+import json
 
 LOGGER = logging.getLogger()
+
+# Load settings
+SCRIPT_OPTIONS = json.loads(open('settings.json').read())
 
 class HoneypotManager(object):
     """
@@ -17,9 +22,9 @@ class HoneypotManager(object):
 
     def manage(self, event):
         """
-            Manage honeypot events
+            Manage honeypot_create events
         """
-        LOGGER.debug('Managing event: %s' % event)
+        LOGGER.debug('Managing honeypot_create event: %s' % event)
 
         # Event fields validation
         if 'honeys' not in event.keys() or not isinstance(event['honeys'], list) or \
@@ -37,7 +42,7 @@ class HoneypotManager(object):
             return
 
         # Snapshot retrieval
-        snapshot = dopy.retrieve_image_by_name('BaseH1-Snapshot', private=True)
+        snapshot = dopy.retrieve_image_by_name('smarthive-snapshot', private=True)
         if snapshot is None:
             LOGGER.error('Base snapshot not found')
             return
@@ -71,3 +76,38 @@ class HoneypotManager(object):
             "user_data" : '\n'.join(user_data)
         }
         droplet = dopy.create_droplet(droplet_params)
+
+        # Send honeypot_ready event
+        self.send_event(droplet['droplet'])
+
+    def send_event(self, droplet):
+        """
+            Manage honeypot_ready events
+        """
+        # Initialize AMQP connection
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=SCRIPT_OPTIONS['broker']['host'])
+        )
+        channel = connection.channel()
+
+        # Declare exchange and exchange_type (defaults to smarthive, direct)
+        channel.exchange_declare(exchange=SCRIPT_OPTIONS['broker']['exchange'],
+            type=SCRIPT_OPTIONS['broker']['exchange_type'])
+
+        # Data to send
+        data = {
+            'event_type'    : 'honeypot_ready',
+            'event_payload' : {
+                'hostname'  : droplet['name'],
+                'ip'        : droplet['networks']['v4'][0]['ip_address']
+            }
+        }
+        event = json.dumps(data)
+
+        # Send event
+        LOGGER.debug('Sending honeypot_ready event: %s' % event)
+        channel.basic_publish(exchange=SCRIPT_OPTIONS['broker']['exchange'],
+            routing_key='web',
+            body=event)
+
+        connection.close()
