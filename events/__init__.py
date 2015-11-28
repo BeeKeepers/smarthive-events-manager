@@ -9,6 +9,7 @@ import traceback
 
 from events.attack import AttackManager
 from events.trends import TrendsManager
+from events.honeypot import HoneypotManager
 
 LOGGER = logging.getLogger()
 
@@ -35,10 +36,13 @@ class Dispatcher(object):
             return
 
         ## Dispatch
-        trends_manager = TrendsManager()
         try:
             if msg['event_type'] == 'event_logentry': # trends log
+                trends_manager = TrendsManager()
                 trends_manager.manage(msg)
+            elif msg['event_type'] == 'honeypot_create': # deploy honeypot
+                honeypots_manager = HoneypotManager()
+                honeypots_manager.manage(msg)
             else:
                 LOGGER.warning('No manager for %s event type' % msg['event_type'])
         except:

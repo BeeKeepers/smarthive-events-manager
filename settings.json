@@ -3,11 +3,15 @@
   "logformat": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
   "logfile": "eventmanager.log",
   "broker": {
-    "host": "localhost",
+    "host": "",
     "exchange": "smarthive",
     "exchange_type": "direct"
   },
   "subscriptions": [
-    "event-manager"
-  ]
+    "event-manager",
+    "honeypot-manager"
+  ],
+  "digitalocean": {
+    "token": ""
+  }
 }

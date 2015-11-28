@@ -8,6 +8,7 @@ import json
 import pika
 import events
 import logging
+import digitalocean.pywrapper
 
 SCRIPT_OPTIONS = json.loads(open('settings.json').read())
 
